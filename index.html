@@ -292,7 +292,7 @@
   </div>
   <main>
     <section id="home" class="page active">
-      <h1>Willkommen bei AutoCheck Sportwagen!</h1>
+      <h1>Willkommen bei AutoCheck Sportwagen</h1>
       <p>Erleben Sie die Zukunft der Sportwagen-Inspektion. Unsere Plattform bietet Ihnen einen schnellen, transparenten und zuverlässigen Check für Ihr Fahrzeug.</p>
     </section>
     <section id="about" class="page">
@@ -351,12 +351,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
       <script>
         // Only declare supabase once globally
-        window._supabaseInstance = window._supabaseInstance || (function() {
+        if (!window._supabaseInstance) {
           const SUPABASE_URL = 'https://vffhisqjkadjtquaendq.supabase.co';
           const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZmhpc3Fqa2FkanRxdWFlbmRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MDc4NDYsImV4cCI6MjA4NjQ4Mzg0Nn0.9VkUrlRIV32gjwVBCXFMV_2a16CXzA_ucvg8pZACtIg';
-          return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        })();
-        const supabase = window._supabaseInstance;
+          window._supabaseInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+        var supabase = window._supabaseInstance;
 
         // Populate dropdowns on load
         document.addEventListener('DOMContentLoaded', function() {
@@ -534,4 +534,3 @@
   </script>
 </body>
 </html>
-
