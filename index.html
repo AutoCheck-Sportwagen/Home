@@ -265,7 +265,7 @@
 <body>
   <nav>
     <div class="title" style="display: flex; align-items: center; gap: 0.7rem;">
-        <a href="https://auto-check-sportwagen.github.io/AutoCheck/" class="logo-link">
+        <a href="https://autocheck-sportwagen.github.io/Home/" class="logo-link">
           <img src="logo.png" alt="Logo" class="logo-img" />
         </a>
     </div>
@@ -285,6 +285,7 @@
     <ul>
       <li onclick="showPage('contact')">Kontakt</li>
       <li onclick="showPage('news')">News</li>
+      <li onclick="showPage('vergleichen')">Vergleichen</li>
       <li onclick="showPage('profile')">Profil</li>
       <li onclick="showPage('settings')">Einstellungen</li>
     </ul>
@@ -314,6 +315,113 @@
     <section id="news" class="page">
       <h1>News</h1>
       <p>Bleiben Sie auf dem Laufenden mit den neuesten Nachrichten rund um Sportwagen und Fahrzeugchecks.</p>
+    </section>
+     <section id="vergleichen" class="page">
+      <h1>Vergleichen</h1>
+      <p>Vergleichen Sie schnell Autos im Überblick!</p>
+      <div style="margin-top:2rem;">
+        <label for="car1">Auto 1:</label>
+        <select id="car1" style="margin-right:1rem;"></select>
+        <label for="car2">Auto 2:</label>
+        <select id="car2"></select>
+        <button onclick="loadComparison()" style="margin-left:1rem;">Vergleichen</button>
+      </div>
+      <div id="comparisonTableContainer" style="margin-top:2rem;"></div>
+      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+      <script>
+        // Supabase setup
+        const SUPABASE_URL = 'https://vffhisqjkadjtquaendq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZmhpc3Fqa2FkanRxdWFlbmRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MDc4NDYsImV4cCI6MjA4NjQ4Mzg0Nn0.9VkUrlRIV32gjwVBCXFMV_2a16CXzA_ucvg8pZACtIg';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Populate dropdowns on load
+        document.addEventListener('DOMContentLoaded', async function() {
+          const { data: cars, error } = await supabase
+            .from('cars')
+            .select('id,Name,Marke')
+            .order('Marke', { ascending: true });
+          if (error) {
+            document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden der Autos: ' + error.message + '</p>';
+            return;
+          }
+          const car1Select = document.getElementById('car1');
+          const car2Select = document.getElementById('car2');
+          car1Select.innerHTML = '<option value="">Bitte wählen...</option>';
+          car2Select.innerHTML = '<option value="">Bitte wählen...</option>';
+          for (const car of cars) {
+            const label = `${car.Marke} – ${car.Name}`;
+            const opt1 = document.createElement('option');
+            opt1.value = car.id;
+            opt1.textContent = label;
+            car1Select.appendChild(opt1);
+            const opt2 = document.createElement('option');
+            opt2.value = car.id;
+            opt2.textContent = label;
+            car2Select.appendChild(opt2);
+          }
+        });
+
+        async function loadComparison() {
+          const car1Id = document.getElementById('car1').value;
+          const car2Id = document.getElementById('car2').value;
+          if (!car1Id || !car2Id) {
+            alert('Bitte wählen Sie beide Autos aus.');
+            return;
+          }
+          if (car1Id === car2Id) {
+            alert('Bitte wählen Sie zwei verschiedene Autos aus.');
+            return;
+          }
+          // Fetch both cars from Supabase
+          const { data: cars, error } = await supabase
+            .from('cars')
+            .select('Name,Marke,Modell,Antriebsart,Farbe,Karosserieform,Baujahr,Leistung,Preis,foto1')
+            .in('id', [car1Id, car2Id]);
+          if (error) {
+            document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden: ' + error.message + '</p>';
+            return;
+          }
+          if (!cars || cars.length < 2) {
+            document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Nicht beide Autos gefunden.</p>';
+            return;
+          }
+          // Sort cars so car1 is always left, car2 right
+          const carMap = {};
+          for (const c of cars) carMap[c.Name + c.Marke] = c;
+          const carA = cars.find(c => c.id === car1Id) || cars[0];
+          const carB = cars.find(c => c.id === car2Id) || cars[1];
+          // Build table
+          const rows = [
+            { label: 'Name', key: 'Name' },
+            { label: 'Marke', key: 'Marke' },
+            { label: 'Modell', key: 'Modell' },
+            { label: 'Antriebsart', key: 'Antriebsart' },
+            { label: 'Farbe(n)', key: 'Farbe' },
+            { label: 'Karosserieform', key: 'Karosserieform' },
+            { label: 'Baujahr', key: 'Baujahr' },
+            { label: 'Leistung', key: 'Leistung' },
+            { label: 'Preis', key: 'Preis' },
+            { label: 'Foto', key: 'foto1' }
+          ];
+          let html = '<table style="width:100%;border-collapse:collapse;box-shadow:0 2px 8px #cbd5e1;">';
+          html += '<thead><tr><th style="border-bottom:2px solid #2563eb;padding:8px;text-align:left;">Eigenschaft</th><th style="border-bottom:2px solid #2563eb;padding:8px;">Auto 1</th><th style="border-bottom:2px solid #2563eb;padding:8px;">Auto 2</th></tr></thead>';
+          html += '<tbody>';
+          for (const row of rows) {
+            html += '<tr>';
+            html += '<td style="padding:8px;font-weight:500;background:#f8fafc;">' + row.label + '</td>';
+            if (row.key === 'foto1') {
+              html += '<td style="padding:8px;text-align:center;">' + (carA[row.key] ? '<img src="' + carA[row.key] + '" alt="Foto Auto 1" style="max-width:120px;max-height:80px;border-radius:6px;">' : '-') + '</td>';
+              html += '<td style="padding:8px;text-align:center;">' + (carB[row.key] ? '<img src="' + carB[row.key] + '" alt="Foto Auto 2" style="max-width:120px;max-height:80px;border-radius:6px;">' : '-') + '</td>';
+            } else {
+              html += '<td style="padding:8px;">' + (carA[row.key] ?? '-') + '</td>';
+              html += '<td style="padding:8px;">' + (carB[row.key] ?? '-') + '</td>';
+            }
+            html += '</tr>';
+          }
+          html += '</tbody></table>';
+          document.getElementById('comparisonTableContainer').innerHTML = html;
+        }
+      </script>
     </section>
     <section id="profile" class="page">
       <h1>Profil</h1>
