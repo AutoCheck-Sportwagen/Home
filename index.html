@@ -327,7 +327,28 @@
         <button id="compareBtn" style="margin-left:1rem;">Vergleichen</button>
       </div>
       <div id="comparisonTableContainer" style="margin-top:2rem;"></div>
-      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    </section>
+    <section id="profile" class="page">
+      <h1>Profil</h1>
+      <p>Hier können Sie Ihre persönlichen Daten und Einstellungen verwalten.</p>
+    </section>
+    <section id="settings" class="page">
+      <h1>Einstellungen</h1>
+      <p>Passen Sie die Plattform nach Ihren Wünschen an.</p>
+      <div style="margin-top:2rem;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+          <span class="slider"></span>
+        </label>
+        <span style="margin-left:1rem;vertical-align:middle;">Dark Mode</span>
+      </div>
+
+    </section>
+  </main>
+  <footer>
+    © 2026 – AutoCheck Sportwagen
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
       <script>
         // Only declare supabase once globally
         window._supabaseInstance = window._supabaseInstance || (function() {
@@ -444,27 +465,6 @@
           document.getElementById('compareBtn').onclick = loadComparison;
         });
       </script>
-    </section>
-    <section id="profile" class="page">
-      <h1>Profil</h1>
-      <p>Hier können Sie Ihre persönlichen Daten und Einstellungen verwalten.</p>
-    </section>
-    <section id="settings" class="page">
-      <h1>Einstellungen</h1>
-      <p>Passen Sie die Plattform nach Ihren Wünschen an.</p>
-      <div style="margin-top:2rem;">
-        <label class="toggle-switch">
-          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-          <span class="slider"></span>
-        </label>
-        <span style="margin-left:1rem;vertical-align:middle;">Dark Mode</span>
-      </div>
-
-    </section>
-  </main>
-  <footer>
-    © 2026 – AutoCheck Sportwagen
-  </footer>
   <script>
         // Dynamically set side panel position under navbar
         function setSidePanelPosition() {
@@ -534,5 +534,3 @@
   </script>
 </body>
 </html>
-
-
