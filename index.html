@@ -416,7 +416,7 @@
           // Fetch both cars from Supabase
           const { data: cars, error } = await supabase
             .from('Autos')
-            .select('id,Name,Marke,Modell,Antriebsart,Farbe(n),Karosserieform,Baujahr,Leistung,Preis,foto1')
+            .select('id,Name,Marke,Modell,Antriebsart,Farbe,Karosserieform,Baujahr,Leistung,Preis,foto1')
             .in('id', [car1Id, car2Id]);
           if (error) {
             document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden: ' + error.message + '</p>';
@@ -435,7 +435,7 @@
             { label: 'Marke', key: 'Marke' },
             { label: 'Modell', key: 'Modell' },
             { label: 'Antriebsart', key: 'Antriebsart' },
-            { label: 'Farbe(n)', key: 'Farbe(n)' },
+            { label: 'Farbe', key: 'Farbe' },
             { label: 'Karosserieform', key: 'Karosserieform' },
             { label: 'Baujahr', key: 'Baujahr' },
             { label: 'Leistung', key: 'Leistung' },
