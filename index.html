@@ -363,7 +363,7 @@
           // Wait for supabase to be loaded
           function fillDropdowns() {
             supabase
-              .from('cars')
+              .from('Autos')
               .select('id,Name,Marke')
               .order('Marke', { ascending: true })
               .then(({ data: cars, error }) => {
@@ -415,7 +415,7 @@
           }
           // Fetch both cars from Supabase
           const { data: cars, error } = await supabase
-            .from('cars')
+            .from('Autos')
             .select('id,Name,Marke,Modell,Antriebsart,Farbe,Karosserieform,Baujahr,Leistung,Preis,foto1')
             .in('id', [car1Id, car2Id]);
           if (error) {
