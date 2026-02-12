@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoCheck Sportwagen</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --nav: #e0e7ef;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --shadow: 0 2px 16px 0 rgba(30,41,59,0.07);
+    }
+    body.dark {
+      --bg: #0f172a;
+      --text: #e5e7eb;
+      --nav: #1e293b;
+      --accent: #60a5fa;
+      --accent-hover: #3b82f6;
+      --shadow: 0 2px 16px 0 rgba(2,6,23,0.18);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+    nav {
+      background: var(--nav);
+      box-shadow: var(--shadow);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .title {
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+    }
+        .logo-img {
+            height: 100px;
+            width: 200px;
+            object-fit: contain;
+            background: #e0e7ef;
+            border-radius: 8px;
+            display: block;
+          }
+          .logo-img img{ 
+            height: 100%;
+            width: 100%;
+
+          }
+          .logo-link {
+            display: inline-block;
+          }
+    .nav-items {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-items a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      padding: 0.3rem 0.7rem;
+      border-radius: 5px;
+      transition: background 0.18s, color 0.18s;
+      position: relative;
+    }
+    .nav-items a:focus, .nav-items a:hover {
+      background: var(--accent);
+      color: #fff;
+      outline: none;
+    }
+    nav button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      box-shadow: 0 1px 4px 0 rgba(37,99,235,0.08);
+      transition: background 0.18s;
+    }
+    nav button:hover {
+      background: var(--accent-hover);
+    }
+    .sidebar {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      z-index: 100;
+    }
+    .menu-icon.hide {
+      display: none;
+    }
+    .icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 0 10px 10px 0;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 8px 0 rgba(37,99,235,0.08);
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    .icon:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 16px 0 rgba(37,99,235,0.13);
+    }
+    .side-panel {
+      position: fixed;
+      left: -270px;
+      width: 270px;
+      background: var(--nav);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 1rem 1rem 1.5rem;
+      transition: left 0.28s cubic-bezier(.4,1.4,.6,1);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      /* top and height set dynamically by JS */
+    }
+    .side-panel.open {
+      left: 0;
+    }
+    .side-panel input {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+      margin-bottom: 0.7rem;
+      background: #fff;
+      color: #1e293b;
+      outline: none;
+      transition: border 0.18s;
+    }
+    .side-panel input:focus {
+      border: 1.5px solid var(--accent);
+    }
+    .side-panel ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .side-panel li {
+      cursor: pointer;
+      padding: 0.5rem 0.7rem;
+      border-radius: 4px;
+      font-size: 1.05rem;
+      transition: background 0.16s, color 0.16s;
+    }
+    .side-panel li:hover {
+      background: var(--accent);
+      color: white;
+    }
+    main {
+      flex: 1;
+      padding: 2.5rem 1.5rem 2rem 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      transition: background 0.2s, color 0.2s;
+    }
+    .page {
+      display: none;
+      animation: fade 0.35s cubic-bezier(.4,1.4,.6,1);
+    }
+    .page.active {
+      display: block;
+    }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+            /* Toggle Switch Styles */
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 48px;
+          height: 28px;
+          vertical-align: middle;
+        }
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .4s;
+          border-radius: 34px;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 20px;
+          width: 20px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+        }
+        .toggle-switch input:checked + .slider {
+          background-color: #2563eb;
+        }
+        .toggle-switch input:checked + .slider:before {
+          transform: translateX(20px);
+        }
+    footer {
+      background: var(--nav);
+      text-align: center;
+      padding: 1.2rem 0 1rem 0;
+      font-size: 1rem;
+      color: #64748b;
+      border-top: 1px solid #cbd5e1;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 700px) {
+      nav { flex-direction: column; gap: 0.7rem; padding: 1rem 0.7rem; }
+      .nav-items { gap: 1rem; }
+      main { padding: 1.2rem 0.5rem; }
+      .side-panel { width: 90vw; left: -90vw; }
+      .side-panel.open { left: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="title" style="display: flex; align-items: center; gap: 0.7rem;">
+        <a href="https://auto-check-sportwagen.github.io/AutoCheck/" class="logo-link">
+          <img src="logo.png" alt="Logo" class="logo-img" />
+        </a>
+    </div>
+    <ul class="nav-items">
+      <li><a href="#" onclick="showPage('home')">Home</a></li>
+      <li><a href="#" onclick="showPage('about')">Über uns</a></li>
+      <li><a href="#" onclick="showPage('services')">Services</a></li>
+      <li><a href="#" onclick="showPage('contact')">Kontakt</a></li>
+    </ul>
+    <!-- Dark mode button removed from navbar -->
+  </nav>
+    <div class="sidebar" id="sidebar">
+      <div class="icon menu-icon" id="menuIcon" tabindex="0" aria-label="Menü öffnen" onmouseenter="openSidePanel()" onfocus="openSidePanel()" onclick="openSidePanel()">☰</div>
+    </div>
+  <div class="side-panel" id="sidePanel" onmouseleave="closeSidePanel()">
+    <input type="text" placeholder="Suchen..." aria-label="Seitensuche" />
+    <ul>
+      <li onclick="showPage('contact')">Kontakt</li>
+      <li onclick="showPage('news')">News</li>
+      <li onclick="showPage('profile')">Profil</li>
+      <li onclick="showPage('settings')">Einstellungen</li>
+    </ul>
+  </div>
+  <main>
+    <section id="home" class="page active">
+      <h1>Willkommen bei AutoCheck Sportwagen</h1>
+      <p>Erleben Sie die Zukunft der Sportwagen-Inspektion. Unsere Plattform bietet Ihnen einen schnellen, transparenten und zuverlässigen Check für Ihr Fahrzeug.</p>
+    </section>
+    <section id="about" class="page">
+      <h1>Über uns</h1>
+      <p>Wir sind ein Team aus Auto-Enthusiasten und Technikexperten, die sich auf die digitale Überprüfung von Sportwagen spezialisiert haben. Qualität, Vertrauen und Innovation stehen bei uns an erster Stelle.</p>
+    </section>
+    <section id="services" class="page">
+      <h1>Unsere Services</h1>
+      <ul>
+        <li>Digitale Fahrzeugprüfung</li>
+        <li>Experten-Gutachten</li>
+        <li>Wertanalyse</li>
+        <li>Beratung beim Autokauf</li>
+      </ul>
+    </section>
+    <section id="contact" class="page">
+      <h1>Kontakt</h1>
+      <p>Sie haben Fragen? Kontaktieren Sie uns gerne per E-Mail: <a href="mailto:info@autocheck.de">info@autocheck.de</a></p>
+    </section>
+    <section id="news" class="page">
+      <h1>News</h1>
+      <p>Bleiben Sie auf dem Laufenden mit den neuesten Nachrichten rund um Sportwagen und Fahrzeugchecks.</p>
+    </section>
+    <section id="profile" class="page">
+      <h1>Profil</h1>
+      <p>Hier können Sie Ihre persönlichen Daten und Einstellungen verwalten.</p>
+    </section>
+    <section id="settings" class="page">
+      <h1>Einstellungen</h1>
+      <p>Passen Sie die Plattform nach Ihren Wünschen an.</p>
+      <div style="margin-top:2rem;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+          <span class="slider"></span>
+        </label>
+        <span style="margin-left:1rem;vertical-align:middle;">Dark Mode</span>
+      </div>
+
+    </section>
+  </main>
+  <footer>
+    © 2026 – AutoCheck Sportwagen
+  </footer>
+  <script>
+        // Dynamically set side panel position under navbar
+        function setSidePanelPosition() {
+          var navbar = document.querySelector('nav');
+          var panel = document.getElementById('sidePanel');
+          if (navbar && panel) {
+            var navRect = navbar.getBoundingClientRect();
+            var top = navRect.bottom + window.scrollY;
+            panel.style.top = top + 'px';
+            panel.style.height = 'calc(100vh - ' + top + 'px)';
+          }
+        }
+        window.addEventListener('resize', setSidePanelPosition);
+        window.addEventListener('DOMContentLoaded', setSidePanelPosition);
+        // Also update when opening the panel
+        function openSidePanel() {
+          setSidePanelPosition();
+          document.getElementById('sidePanel').classList.add('open');
+          document.getElementById('menuIcon').classList.add('hide');
+        }
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      // Save preference
+      if(document.body.classList.contains('dark')) {
+        localStorage.setItem('darkMode', 'on');
+      } else {
+        localStorage.setItem('darkMode', 'off');
+      }
+    }
+    // On load, set toggle state and dark mode
+    document.addEventListener('DOMContentLoaded', function() {
+      const darkPref = localStorage.getItem('darkMode');
+      if(darkPref === 'on') {
+        document.body.classList.add('dark');
+        var toggle = document.getElementById('darkModeToggle');
+        if(toggle) toggle.checked = true;
+      }
+    });
+      function openSidePanel() {
+        document.getElementById('sidePanel').classList.add('open');
+        document.getElementById('menuIcon').classList.add('hide');
+      }
+      function closeSidePanel() {
+        document.getElementById('sidePanel').classList.remove('open');
+        document.getElementById('menuIcon').classList.remove('hide');
+      }
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      var el = document.getElementById(id);
+      if (el) el.classList.add('active');
+    }
+    // Optional: Close side panel on click outside
+    document.addEventListener('click', function(e) {
+      var panel = document.getElementById('sidePanel');
+      if (panel.classList.contains('open') && !panel.contains(e.target) && !e.target.classList.contains('icon')) {
+        closeSidePanel();
+      }
+    });
+      // Keyboard accessibility for menu icon only
+      document.getElementById('menuIcon').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          openSidePanel();
+        }
+      });
+  </script>
+</body>
+</html>
