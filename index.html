@@ -324,43 +324,63 @@
         <select id="car1" style="margin-right:1rem;"></select>
         <label for="car2">Auto 2:</label>
         <select id="car2"></select>
-        <button onclick="loadComparison()" style="margin-left:1rem;">Vergleichen</button>
+        <button id="compareBtn" style="margin-left:1rem;">Vergleichen</button>
       </div>
       <div id="comparisonTableContainer" style="margin-top:2rem;"></div>
-      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
       <script>
-        // Supabase setup
-        const SUPABASE_URL = 'https://vffhisqjkadjtquaendq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZmhpc3Fqa2FkanRxdWFlbmRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MDc4NDYsImV4cCI6MjA4NjQ4Mzg0Nn0.9VkUrlRIV32gjwVBCXFMV_2a16CXzA_ucvg8pZACtIg';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Only declare supabase once globally
+        window._supabaseInstance = window._supabaseInstance || (function() {
+          const SUPABASE_URL = 'https://vffhisqjkadjtquaendq.supabase.co';
+          const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZmhpc3Fqa2FkanRxdWFlbmRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MDc4NDYsImV4cCI6MjA4NjQ4Mzg0Nn0.9VkUrlRIV32gjwVBCXFMV_2a16CXzA_ucvg8pZACtIg';
+          return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        })();
+        const supabase = window._supabaseInstance;
 
         // Populate dropdowns on load
-        document.addEventListener('DOMContentLoaded', async function() {
-          const { data: cars, error } = await supabase
-            .from('cars')
-            .select('id,Name,Marke')
-            .order('Marke', { ascending: true });
-          if (error) {
-            document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden der Autos: ' + error.message + '</p>';
-            return;
+        document.addEventListener('DOMContentLoaded', function() {
+          // Wait for supabase to be loaded
+          function fillDropdowns() {
+            supabase
+              .from('cars')
+              .select('id,Name,Marke')
+              .order('Marke', { ascending: true })
+              .then(({ data: cars, error }) => {
+                if (error) {
+                  document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden der Autos: ' + error.message + '</p>';
+                  return;
+                }
+                const car1Select = document.getElementById('car1');
+                const car2Select = document.getElementById('car2');
+                car1Select.innerHTML = '<option value="">Bitte wählen...</option>';
+                car2Select.innerHTML = '<option value="">Bitte wählen...</option>';
+                for (const car of cars) {
+                  const label = `${car.Marke} – ${car.Name}`;
+                  const opt1 = document.createElement('option');
+                  opt1.value = car.id;
+                  opt1.textContent = label;
+                  car1Select.appendChild(opt1);
+                  const opt2 = document.createElement('option');
+                  opt2.value = car.id;
+                  opt2.textContent = label;
+                  car2Select.appendChild(opt2);
+                }
+              });
           }
-          const car1Select = document.getElementById('car1');
-          const car2Select = document.getElementById('car2');
-          car1Select.innerHTML = '<option value="">Bitte wählen...</option>';
-          car2Select.innerHTML = '<option value="">Bitte wählen...</option>';
-          for (const car of cars) {
-            const label = `${car.Marke} – ${car.Name}`;
-            const opt1 = document.createElement('option');
-            opt1.value = car.id;
-            opt1.textContent = label;
-            car1Select.appendChild(opt1);
-            const opt2 = document.createElement('option');
-            opt2.value = car.id;
-            opt2.textContent = label;
-            car2Select.appendChild(opt2);
+          if (window.supabase) {
+            fillDropdowns();
+          } else {
+            // Wait for supabase script to load
+            const interval = setInterval(() => {
+              if (window.supabase) {
+                clearInterval(interval);
+                fillDropdowns();
+              }
+            }, 50);
           }
         });
 
+        // Make loadComparison globally accessible
         async function loadComparison() {
           const car1Id = document.getElementById('car1').value;
           const car2Id = document.getElementById('car2').value;
@@ -375,7 +395,7 @@
           // Fetch both cars from Supabase
           const { data: cars, error } = await supabase
             .from('cars')
-            .select('Name,Marke,Modell,Antriebsart,Farbe,Karosserieform,Baujahr,Leistung,Preis,foto1')
+            .select('id,Name,Marke,Modell,Antriebsart,Farbe,Karosserieform,Baujahr,Leistung,Preis,foto1')
             .in('id', [car1Id, car2Id]);
           if (error) {
             document.getElementById('comparisonTableContainer').innerHTML = '<p style="color:red">Fehler beim Laden: ' + error.message + '</p>';
@@ -386,10 +406,8 @@
             return;
           }
           // Sort cars so car1 is always left, car2 right
-          const carMap = {};
-          for (const c of cars) carMap[c.Name + c.Marke] = c;
-          const carA = cars.find(c => c.id === car1Id) || cars[0];
-          const carB = cars.find(c => c.id === car2Id) || cars[1];
+          const carA = cars.find(c => c.id == car1Id) || cars[0];
+          const carB = cars.find(c => c.id == car2Id) || cars[1];
           // Build table
           const rows = [
             { label: 'Name', key: 'Name' },
@@ -421,6 +439,10 @@
           html += '</tbody></table>';
           document.getElementById('comparisonTableContainer').innerHTML = html;
         }
+        // Attach to button
+        document.addEventListener('DOMContentLoaded', function() {
+          document.getElementById('compareBtn').onclick = loadComparison;
+        });
       </script>
     </section>
     <section id="profile" class="page">
@@ -512,4 +534,3 @@
   </script>
 </body>
 </html>
-
