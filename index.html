@@ -80,6 +80,7 @@
       font-weight: 500;
       padding: 0.3rem 0.7rem;
       border-radius: 5px;
+      font-size: 22px;
       transition: background 0.18s, color 0.18s;
       position: relative;
     }
@@ -270,6 +271,29 @@
         .toggle-switch input:checked + .slider:before {
           transform: translateX(20px);
         }
+     .container {
+            display: grid;
+            grid-template-columns: repeat(2, 200px);
+            grid-template-rows: repeat(2, 200px);
+            gap: 20px;
+        }
+
+        .box {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #333;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;  /* Bild horizontal zentrieren */
+            align-items: center;      /* Bild vertikal zentrieren */
+            overflow: hidden;
+        }
+
+        .box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
     footer {
       background: var(--nav);
       text-align: center;
@@ -319,9 +343,15 @@
       <h1>Willkommen bei AutoCheck Sportwagen</h1>
       <p>Erleben Sie die Zukunft der Sportwagen-Inspektion. Unsere Plattform bietet Ihnen einen schnellen, transparenten und zuverlässigen Check für Ihr Fahrzeug.</p>
     </section>
-    <section id="about" class="page">
-      <h1>Über uns</h1>
+    <section id="marken" class="page">
+      <h1>Makren</h1>
       <p>Wir sind ein Team aus Auto-Enthusiasten und Technikexperten, die sich auf die digitale Überprüfung von Sportwagen spezialisiert haben. Qualität, Vertrauen und Innovation stehen bei uns an erster Stelle.</p>
+       <div class="container">
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+    </div>
     </section>
     <section id="services" class="page">
       <h1>Unsere Services</h1>
@@ -558,5 +588,6 @@
   </script>
 </body>
 </html>
+
 
 
