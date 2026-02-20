@@ -273,16 +273,17 @@
         }
      .container {
             display: grid;
+       margin: 40px auto;
             grid-template-columns: repeat(2, 200px);
             grid-template-rows: repeat(2, 200px);
-            gap: 20px;
+            gap: 200px 250px;
+       align-items: center;
+       justify-content: center;
         }
 
         .box {
-            width: 200px;
-            height: 200px;
-            border: 2px solid #333;
-            background-color: #fff;
+            width: 250px;
+            height: 200px;         
             display: flex;
             justify-content: center;  /* Bild horizontal zentrieren */
             align-items: center;      /* Bild vertikal zentrieren */
@@ -294,6 +295,26 @@
             max-height: 100%;
             object-fit: cover;
         }
+    #bmw {
+      background-image: url('https://vffhisqjkadjtquaendq.supabase.co/storage/v1/object/public/auto_fotos/bmw/logo_bmw.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-left: 40px;
+    }
+    #ferrari {
+      background-image: url('https://vffhisqjkadjtquaendq.supabase.co/storage/v1/object/public/auto_fotos/ferrari/logo_ferrari.png');
+      background-size: cover;
+      background-color: #f8fafc;
+    }
+    #porsche {
+      width: 350px;
+      height: 300px;
+      background-image: url('https://vffhisqjkadjtquaendq.supabase.co/storage/v1/object/public/auto_fotos/porsche/logo_porsche.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: #f8fafc;
+
+    }
     footer {
       background: var(--nav);
       text-align: center;
@@ -344,13 +365,13 @@
       <p>Erleben Sie die Zukunft der Sportwagen-Inspektion. Unsere Plattform bietet Ihnen einen schnellen, transparenten und zuverlässigen Check für Ihr Fahrzeug.</p>
     </section>
     <section id="marken" class="page">
-      <h1>Makren</h1>
+      <h1>Marken</h1>
       <p>Wir sind ein Team aus Auto-Enthusiasten und Technikexperten, die sich auf die digitale Überprüfung von Sportwagen spezialisiert haben. Qualität, Vertrauen und Innovation stehen bei uns an erster Stelle.</p>
        <div class="container">
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
+        <div id="bmw" class="box"></div>
+        <div id="ferrari" class="box"></div>
+        <div id="porsche" class="box"></div>
+        <div id="leer" class="box"></div>
     </div>
     </section>
     <section id="services" class="page">
@@ -588,7 +609,6 @@
   </script>
 </body>
 </html>
-
 
 
 
